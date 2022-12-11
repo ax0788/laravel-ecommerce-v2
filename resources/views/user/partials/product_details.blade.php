@@ -30,13 +30,20 @@
 
             <div class="col-md-6 col-lg-5 p-b-30">
                 <div class="p-r-50 p-t-5 p-lr-0-lg">
-                    <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+                    <h4 class="mtext-105 cl2 js-name-detail p-b-14" id="pname">
 {{ $product->product_name_en }}
 </h4>
 
-                    <span class="mtext-106 cl2">
-                        $58.79
-                    </span>
+                @if ($product->discount_price == null)
+                <span class="stext-105 cl3 price"> ${{ $product->selling_price }}
+                </span>
+                @else
+                <span class="stext-105 cl3 price"> ${{ $product->discount_price }}
+              </span>
+                <span class="stext-105 cl3 price-before-discount">
+                 ${{ $product->selling_price }}
+                </span>
+                @endif
 
                     <p class="stext-102 cl3 p-t-23">
                         {{ $product->short_descp }}
@@ -51,13 +58,16 @@
 
                             <div class="size-204 respon6-next">
                                 <div class="rs1-select2 bor8 bg0">
-                                    <select class="js-select2" name="time">
-                                        <option>Choose an option</option>
-                                        <option>Size S</option>
-                                        <option>Size M</option>
-                                        <option>Size L</option>
-                                        <option>Size XL</option>
+                                    @if ($product->product_size == null)
+                                    <h4 class="text-danger">NO SIZE AVAILABLE.</h4>
+                                    @else
+                                    <select class="js-select2" name="time"  id="size">
+                                        <option  disabled>--Select Size--</option>
+                                        @foreach ($product_size as $size)
+                                        <option value="{{ $size }}">{{ ucwords($size) }}</option>
+                                       @endforeach
                                     </select>
+                                    @endif
                                     <div class="dropDownSelect2"></div>
                                 </div>
                             </div>
@@ -70,12 +80,11 @@
 
                             <div class="size-204 respon6-next">
                                 <div class="rs1-select2 bor8 bg0">
-                                    <select class="js-select2" name="time">
-                                        <option>Choose an option</option>
-                                        <option>Red</option>
-                                        <option>Blue</option>
-                                        <option>White</option>
-                                        <option>Grey</option>
+                                    <select class="js-select2" name="time" id="color">
+                                        <option>--Select Color--</option>
+                                        @foreach ($product_color as $color)
+              <option value="{{ $color }}">{{ ucwords($color) }}</option>
+             @endforeach
                                     </select>
                                     <div class="dropDownSelect2"></div>
                                 </div>
@@ -89,16 +98,16 @@
                                         <i class="fs-16 zmdi zmdi-minus"></i>
                                     </div>
 
-                                    <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product"
-                                        value="1">
+                                    <input class="mtext-104 cl3 txt-center num-product" type="number"
+                                        value="1"  min="1" id="qty">
 
                                     <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
                                         <i class="fs-16 zmdi zmdi-plus"></i>
                                     </div>
                                 </div>
-
+                                <input type="hidden" id="product_id" value="{{ $product->id }}" min="1">
                                 <button
-                                    class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
+                                    class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04" type="submit" onclick="addToCart()">
                                     Add to cart
                                 </button>
                             </div>

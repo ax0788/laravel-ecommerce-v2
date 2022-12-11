@@ -9,6 +9,7 @@ use App\Http\Controllers\Backend\SubCategoryController;
 use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\IndexController;
+use App\Http\Controllers\User\WishlistController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,7 +92,23 @@ Route::group(['middleware' => 'auth'], function () {
    // Product Add to Cart Store DATA
     Route::post('/cart/data/store/{id}', [CartController::class, 'AddToCart']);
 
+    // GET data from mini cart
+     Route::get('/product/mini/cart', [CartController::class, 'AddMiniCart']);
+
+     //Remove Item from mini cart
+     Route::get('/product/minicart/remove/{rowId}', [CartController::class, 'RemoveMiniCart']);
+
+      // Wishlist Page View
+      Route::get('/wishlist', [WishlistController::class, 'ViewWishlist'])->name('wishlist');
+      // Wishlist Page Load Data AJAX
+      Route::get('/get-wishlist-product', [WishlistController::class, 'GetWishlistProduct']);
+      // Wishlist Remove Product AJAX
+      Route::get('/wishlist-remove/{id}', [WishlistController::class, 'RemoveWishlistProduct']);
+
 });
 
 // Guest Routes
 /* Route::view('/home', 'user.home')->name('home'); */
+
+    //Add to WishList
+    Route::post('/add-to-wishlist/{product_id}', [CartController::class, 'AddToWishlist']);

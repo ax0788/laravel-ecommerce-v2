@@ -25,17 +25,13 @@ class IndexController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        $color_en = $product->product_color_en;
-        $product_color_en = explode(',', $color_en);
+        $color = $product->product_color;
+        $product_color = explode(',', $color);
 
-        $color_cn = $product->product_color_cn;
-        $product_color_cn = explode(',', $color_cn);
 
-        $size_en = $product->product_size_en;
-        $product_size_en = explode(',', $size_en);
+        $size = $product->product_size;
+        $product_size = explode(',', $size);
 
-        $size_cn = $product->product_size_cn;
-        $product_size_cn = explode(',', $size_cn);
 
         $multiImage = MultiImg::where('product_id', $id)->get();
 
@@ -44,10 +40,8 @@ class IndexController extends Controller
         return view('user.product_details', compact(
             'product',
             'multiImage',
-            'product_color_en',
-            'product_color_cn',
-            'product_size_en',
-            'product_size_cn',
+            'product_color',
+            'product_size',
             'relatedProduct'
 
         ));
