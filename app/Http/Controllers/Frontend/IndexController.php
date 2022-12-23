@@ -18,7 +18,7 @@ class IndexController extends Controller
         $hot_deals = Product::where('hot_deals', 1)->where('discount_price', '!=', Null)->limit(3)->orderBy('id', 'DESC')->get();
         $special_offer = Product::where('special_offer', 1)->limit(3)->orderBy('id', 'DESC')->get();
 
-        return view('user.home', compact('categories', 'products', 'featured', 'hot_deals', 'special_offer'));
+        return view('frontend.index', compact('categories', 'products', 'featured', 'hot_deals', 'special_offer'));
     }
 
     public function ProductDetails($id, $slug)

@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class WishlistController extends Controller
 {
     public function ViewWishlist()
     {
-        return view('frontend.wishlist.view_wishlist');
+        return view('frontend.wishlist.index');
     }
 
     public function GetWishlistProduct()

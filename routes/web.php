@@ -10,6 +10,10 @@ use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\IndexController;
 use App\Http\Controllers\User\WishlistController;
+use App\Http\Controllers\User\CartPageController;
+use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\Backend\CouponController;
+use App\Http\Controllers\Backend\ShippingAreaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,9 +26,9 @@ use App\Http\Controllers\User\WishlistController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+
+
 
 /////////// Auth Route Group ///////////
 Route::group(['middleware' => 'auth'], function () {
@@ -65,6 +69,57 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('subcategories', SubCategoryController::class);
         // Product Routes
         Route::resource('products', ProductController::class);
+
+
+        //  Admin Coupon Routes
+    Route::prefix('coupon')->group(function () {
+    Route::get('/view', [CouponController::class, 'CouponView'])->name('manage-coupon');
+    Route::post('/store', [CouponController::class, 'CouponStore'])->name('coupon.store');
+    Route::get('/edit/{id}', [CouponController::class, 'CouponEdit'])->name('coupon.edit');
+    Route::post('/update/{id}', [CouponController::class, 'CouponUpdate'])->name('coupon.update');
+    Route::get('/delete/{id}', [CouponController::class, 'CouponDelete'])->name('coupon.delete');
+});
+
+
+
+//  Admin Shipping Area Routes
+Route::prefix('shipping')->group(function () {
+    // Shipping Country
+    Route::get('/country/view', [ShippingAreaController::class, ' CountryIndex'])->name('manage-country');
+
+    Route::post('/country/store', [ShippingAreaController::class, ' CountryStore'])->name('country.store');
+
+    Route::get('/country/edit/{id}', [ShippingAreaController::class, ' CountryEdit'])->name('country.edit');
+
+    Route::post('/country/update/{id}', [ShippingAreaController::class, ' CountryUpdate'])->name('country.update');
+
+    Route::get('/country/delete/{id}', [ShippingAreaController::class, ' CountryDelete'])->name(' country.delete');
+
+    // Shipping District
+    Route::get('/state/view', [ShippingAreaController::class, 'StateView'])->name('state.index');
+
+    Route::post('/state/store', [ShippingAreaController::class, 'StateStore'])->name('state.store');
+
+    Route::get('/state/edit/{id}', [ShippingAreaController::class, 'StateEdit'])->name('state.edit');
+
+    Route::post('/state/update/{id}', [ShippingAreaController::class, 'StateUpdate'])->name('state.update');
+
+    Route::get('/state/delete/{id}', [ShippingAreaController::class, 'StateDelete'])->name('state.delete');
+
+    // Shipping State
+    Route::get('/district/view', [ShippingAreaController::class, 'DistrictView'])->name('district.index');
+
+    Route::post('/district/store', [ShippingAreaController::class, 'DistrictStore'])->name('district.store');
+
+    Route::get('/district/edit/{id}', [ShippingAreaController::class, 'DistrictEdit'])->name('district.edit');
+
+    Route::post('/district/update/{id}', [ShippingAreaController::class, 'DistrictUpdate'])->name('district.update');
+
+    Route::get('/district/delete/{id}', [ShippingAreaController::class, 'DistrictDelete'])->name('district.delete');
+});
+
+
+
     });
 
 
@@ -83,7 +138,8 @@ Route::group(['middleware' => 'auth'], function () {
     // Edit Password
     Route::view('/password/edit', 'user.profile.password.edit')->name('profile.password.edit');
 
-    Route::get('/home', [IndexController::class, 'index'])->name('home');
+    Route::get('/', [IndexController::class, 'index'])->name('home');
+
     Route::get('/product/details/{id}/{slug}', [IndexController::class, 'ProductDetails'])->name('product.details');
 
     // Product View Modal with AJAX
@@ -97,18 +153,57 @@ Route::group(['middleware' => 'auth'], function () {
 
      //Remove Item from mini cart
      Route::get('/product/minicart/remove/{rowId}', [CartController::class, 'RemoveMiniCart']);
-
+      //Add to WishList
+      Route::post('/add-to-wishlist/{product_id}', [CartController::class, 'AddToWishlist']);
       // Wishlist Page View
-      Route::get('/wishlist', [WishlistController::class, 'ViewWishlist'])->name('wishlist');
+      Route::get('/wishlist', [WishlistController::class, 'ViewWishlist'])->name('wishlist.index');
       // Wishlist Page Load Data AJAX
       Route::get('/get-wishlist-product', [WishlistController::class, 'GetWishlistProduct']);
       // Wishlist Remove Product AJAX
       Route::get('/wishlist-remove/{id}', [WishlistController::class, 'RemoveWishlistProduct']);
 
+
+
+
 });
 
-// Guest Routes
-/* Route::view('/home', 'user.home')->name('home'); */
+//////////////// Guest Routes/////////////////////////////////
+     /////// View Cart Page/////////////
+    Route::get('/mycart', [CartPageController::class, 'MyCart'])->name('cart.index');
+    //  GET Cart Products
+    Route::get('/get-cart-product', [CartPageController::class, 'GetCartProduct']);
+    // Remove  Cart Products
+    Route::get('/cart-remove/{rowId}', [CartPageController::class, 'RemoveCartProduct']);
+    // Increment Cart Item
+    Route::get('/cart-increment/{rowId}', [CartPageController::class, 'CartIncrement']);
+    // Decrement Cart Item
+    Route::get('/cart-decrement/{rowId}', [CartPageController::class, 'CartDecrement']);
 
-    //Add to WishList
-    Route::post('/add-to-wishlist/{product_id}', [CartController::class, 'AddToWishlist']);
+    /////Frontend Apply & Remove Coupon
+    Route::post('/coupon-apply', [CartController::class, 'CouponApply']);
+    Route::get('/coupon-cal', [CartController::class, 'CouponCal']);
+    Route::get('/coupon-remove', [CartController::class, 'CouponRemove']);
+
+    //  Admin Coupon Routes
+    Route::prefix('coupon')->group(function () {
+    Route::get('/view', [CouponController::class, 'CouponView'])->name('manage-coupon');
+    Route::post('/store', [CouponController::class, 'CouponStore'])->name('coupon.store');
+    Route::get('/edit/{id}', [CouponController::class, 'CouponEdit'])->name('coupon.edit');
+    Route::post('/update/{id}', [CouponController::class, 'CouponUpdate'])->name('coupon.update');
+    Route::get('/delete/{id}', [CouponController::class, 'CouponDelete'])->name('coupon.delete');
+});
+
+
+
+
+
+     /////// Checkout Routes/////////////
+     Route::get('/checkout', [CartController::class, 'CheckoutCreate'])->name('checkout.index');
+
+    // Checkout View Page Responsive form-group Selection w/ AJAX
+    Route::get('/district-get/ajax/{division_id}', [CheckoutController::class, 'DistrictGetAjax']);
+
+    Route::get('/state-get/ajax/{district_id}', [CheckoutController::class, 'StateGetAjax']);
+
+    // Checkout Store
+    Route::post('/checkout/store', [CheckoutController::class, 'CheckoutStore'])->name('checkout.store');

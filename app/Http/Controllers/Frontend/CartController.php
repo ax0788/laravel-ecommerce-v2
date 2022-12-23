@@ -11,8 +11,8 @@ use App\Models\Wishlist;
 
 use Gloudemans\Shoppingcart\Facades\Cart as Cart;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -62,7 +62,7 @@ class CartController extends Controller
         return response()->json(array(
             'cartData' => $cartData,
             'cartQty' => $cartQty,
-            'cartTotal' =>$cartTotal,
+            'cartTotal' => $cartTotal,
         ));
     }
 
@@ -97,11 +97,12 @@ class CartController extends Controller
     {
         $coupon = Coupon::where('coupon_name', $request->coupon_name)->where('coupon_validity', '>=', Carbon::now()->format('Y-m-d'))->first();
         if ($coupon) {
+            $ct =  Cart::totalFloat();
             Session::put('coupon', [
                 'coupon_name' => $coupon->coupon_name,
                 'coupon_discount' => $coupon->coupon_discount,
-                'discount_amount' => round(Cart::total() * $coupon->coupon_discount / 100),
-                'total_amount' => round(Cart::total() - Cart::total() * $coupon->coupon_discount / 100),
+                'discount_amount' => round($ct * $coupon->coupon_discount / 100),
+                'total_amount' => round($ct - $ct * $coupon->coupon_discount / 100),
             ]);
             return response()->json(array(
                 'validity' => true,
@@ -137,15 +138,15 @@ class CartController extends Controller
 
 
         //Checkout
-/*         public function CheckoutCreate()
+         public function CheckoutCreate()
         {
             if (Auth::check()) {
                 if (Cart::total() > 0) {
                     $cartData = Cart::content();
                     $cartQty = Cart::count();
                     $cartTotal = Cart::total();
-                    $divisions = ShipDivison::orderBy('division_name', 'ASC')->get();
-                    return view('frontend.checkout.checkout_view', compact('cartData', 'cartQty', 'cartTotal', 'divisions'));
+                    // $divisions = ShipDivison::orderBy('division_name', 'ASC')->get();
+                    return view('frontend.checkout.index', compact('cartData', 'cartQty', 'cartTotal'));
                 } else {
                     $notification = array(
                         'message' => 'Your Cart Is Empty!',
@@ -162,5 +163,5 @@ class CartController extends Controller
             }
         }
 
- */
+
 }
